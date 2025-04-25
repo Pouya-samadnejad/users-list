@@ -1,0 +1,26 @@
+@font-face {
+  font-family: "IranYekan";
+  src: url("/fonts/IRANYekanWebRegular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "IranYekan";
+  src: url("/fonts/IRANYekanWebMedium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "IranYekan";
+  src: url("/fonts/IRANYekanWebBold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IranYekan";
+}
