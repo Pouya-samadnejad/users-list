@@ -12,6 +12,9 @@ function TableProvider({ children }) {
     const saved = localStorage.getItem("userTypeFilter");
     return saved !== null ? parseInt(saved, 10) : "";
   });
+
+  const [userSystemFilter, setUserSystemFilter] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     if (userTypeFilter !== "") {
       localStorage.setItem("userTypeFilter", userTypeFilter.toString());
@@ -20,8 +23,6 @@ function TableProvider({ children }) {
     }
   }, [userTypeFilter]);
 
-  const [userSystemFilter, setUserSystemFilter] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   console.log(users);
   const currentUsers = users.slice(

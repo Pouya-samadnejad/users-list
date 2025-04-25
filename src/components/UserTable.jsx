@@ -42,7 +42,9 @@ export default function PaginatedTable() {
                 const matchUserType =
                   userTypeFilter === "" || user.type === userTypeFilter;
                 const matchUserSystem =
-                  userSystemFilter === "" || user.systems === userTypeFilter;
+                  userSystemFilter === "" ||
+                  user.systems.includes(Number(userSystemFilter));
+
                 return matchesSearch && matchUserType && matchUserSystem;
               })
               .map((user) => (
