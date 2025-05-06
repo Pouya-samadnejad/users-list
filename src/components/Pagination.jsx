@@ -1,5 +1,6 @@
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useTable } from "../contexts/TableContext";
+import DropdownFilter from "./DropdownFilter";
 export default function Pagination() {
   const {
     page,
@@ -7,6 +8,8 @@ export default function Pagination() {
     handleNextPage,
     handlePreviousPage,
     handleSetPage,
+    handleNumTable,
+    numTable,
   } = useTable();
 
   return (
@@ -38,6 +41,20 @@ export default function Pagination() {
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
+      <div>
+        <DropdownFilter>
+          <select
+            name="سطر جدول"
+            id="type-selection"
+            onChange={handleNumTable}
+            value={numTable}
+          >
+            <option value="5"> سطر5</option>
+            <option value="10">10 سطر</option>
+            <option value="20">20 سطر</option>
+          </select>
+        </DropdownFilter>
+      </div>
     </div>
   );
 }

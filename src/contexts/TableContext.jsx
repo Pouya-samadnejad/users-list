@@ -1,12 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
-const USERS_PER_PAGE = 5;
-
 const TableContext = createContext();
 
 function TableProvider({ children }) {
   const users = useSelector((state) => state.user);
+  const [numTable, setNumTable] = useState(() => {
+    const saved = localStorage.getItem("numTable");
+    return saved !== null ? parseInt(saved, 10) : 5;
+  });
   const [pageParams, setPageParams] = useSearchParams();
   const page = Number(pageParams.get("page") || 1);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +20,11 @@ function TableProvider({ children }) {
 
   const [userSystemFilter, setUserSystemFilter] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem("numTable", numTable);
+  }, [numTable]);
+
   useEffect(() => {
     if (userTypeFilter !== "") {
       localStorage.setItem("userTypeFilter", userTypeFilter.toString());
@@ -26,12 +33,15 @@ function TableProvider({ children }) {
     }
   }, [userTypeFilter]);
 
+  const USERS_PER_PAGE = numTable;
+
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   console.log(users);
   const currentUsers = users.slice(
     (page - 1) * USERS_PER_PAGE,
     page * USERS_PER_PAGE
   );
+
   function handleOpen() {
     setIsOpen((opn) => !opn);
   }
@@ -66,8 +76,9 @@ function TableProvider({ children }) {
       return params;
     });
   }
-  function handleSearch(e) {
-    const value = e.target.value;
+
+  function handleNumTable(e) {
+    setNumTable(e.target.value === "" ? 5 : Number(e.target.value));
   }
 
   function handlUserType(e) {
@@ -96,7 +107,6 @@ function TableProvider({ children }) {
         handlePreviousPage,
         handleSetPage,
         handleInputChange,
-        handleSearch,
         searchTerm,
         handlUserType,
         userTypeFilter,
@@ -106,6 +116,8 @@ function TableProvider({ children }) {
         isOpen,
         handleOpen,
         currentUser,
+        handleNumTable,
+        numTable,
       }}
     >
       {children}
