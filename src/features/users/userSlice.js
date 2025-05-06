@@ -18,15 +18,16 @@ const userSlice = createSlice({
         };
       },
       reducer(state, action) {
-        state.forEach((user) => {
-          user.id = String(Number(user.id) + 1);
-        });
+      
 
         // Add new user with id 1 at the beginning
         state.unshift({
-          id: 1,
+          id: state.length+ Math.round(Math.random(500)*500)+'',
           ...action.payload,
         });
+
+        console.log(state);
+        
       },
     },
 

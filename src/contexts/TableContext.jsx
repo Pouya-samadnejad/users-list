@@ -1,13 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useSearchParams } from "react-router-dom";
 const USERS_PER_PAGE = 5;
 
 const TableContext = createContext();
 
 function TableProvider({ children }) {
   const users = useSelector((state) => state.user);
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [pageParams, setPageParams] = useSearchParams();
+  const page = Number(pageParams.get("page") || 1) 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchTerm = searchParams.get("fullname")|| "";
   const [userTypeFilter, setUserTypeFilter] = useState(() => {
     const saved = localStorage.getItem("userTypeFilter");
     return saved !== null ? parseInt(saved, 10) : "";
@@ -33,19 +36,33 @@ function TableProvider({ children }) {
     setIsOpen((opn) => !opn);
   }
   function handleNextPage() {
-    setPage((p) => Math.min(p + 1, totalPages));
+    if(page<totalPages){
+
+      pageParams.set("page", page+1);
+      setPageParams(pageParams)
+    }
   }
   function handlePreviousPage() {
-    setPage((p) => Math.max(p - 1, 1));
+    if(page>1){
+      pageParams.set("page",page-1);
+      setPageParams(pageParams)
+    }
   }
   function handleSetPage(p) {
-    setPage(p);
+    if(page>=1 && page<= totalPages)
+    {const params= new URLSearchParams(pageParams.toString())
+      params.set("page",p);
+      setPageParams(params)
+    }
   }
-  function handleInputChange(event) {
-    setSearchTerm(event.target.value);
+  function handleInputChange(e) {
+    const value= e.target.value;
+    setSearchParams(prev=> {const params= new URLSearchParams(prev); if(value){params.set("fullname", value)} else {params.delete("fullname")}
+  return params});
+    
   }
-  function handleSearch(event) {
-    event.preventDefault(); // Prevent default form submission if used in a form
+  function handleSearch(e) {
+    const value= e.target.value;
   }
 
   function handlUserType(e) {
@@ -59,7 +76,7 @@ function TableProvider({ children }) {
     <TableContext.Provider
       value={{
         page,
-        setPage,
+        
         totalPages,
         currentUsers,
         handleNextPage,
@@ -74,7 +91,7 @@ function TableProvider({ children }) {
         userSystemFilter,
         users,
         isOpen,
-        handleOpen,
+        handleOpen,      
       }}
     >
       {children}

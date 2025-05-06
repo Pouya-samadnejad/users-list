@@ -5,7 +5,9 @@ import SignUpButton from "./SignUpButton";
 import Filtersection from "./Filtersection";
 
 export default function UpperSection() {
-  const { users, isOpen, handleOpen } = useTable();
+  const { users, isOpen, handleOpen,searchTerm, userTypeFilter,userSystemFilter } = useTable();
+  const currentUser= users.filter(user => {const fullName = `${user.firstName} ${user.lastName}`; const matchesSearch= fullName.includes(searchTerm); const matchUserType = userTypeFilter === ''|| user.type === userTypeFilter; const matchUserSystem= userSystemFilter===''|| user.systems.includes(Number(userSystemFilter))
+return matchUserSystem && matchesSearch && matchUserType})
   return (
     <div className="flex my-4 items-center justify-between">
       <div className="flex gap-2 items-center">
@@ -20,7 +22,7 @@ export default function UpperSection() {
         )}
       </div>
       <div className="flex justify-between items-center gap-2">
-        <p className="font-bold">{`تعداد کاربر${users.length}`}</p>
+        <p className="font-bold">{`تعداد کاربر${currentUser.length}`}</p>
         <SignUpButton />
       </div>
     </div>
