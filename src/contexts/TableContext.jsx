@@ -8,9 +8,9 @@ const TableContext = createContext();
 function TableProvider({ children }) {
   const users = useSelector((state) => state.user);
   const [pageParams, setPageParams] = useSearchParams();
-  const page = Number(pageParams.get("page") || 1) 
+  const page = Number(pageParams.get("page") || 1);
   const [searchParams, setSearchParams] = useSearchParams();
-  const searchTerm = searchParams.get("fullname")|| "";
+  const searchTerm = searchParams.get("fullname") || "";
   const [userTypeFilter, setUserTypeFilter] = useState(() => {
     const saved = localStorage.getItem("userTypeFilter");
     return saved !== null ? parseInt(saved, 10) : "";
@@ -36,33 +36,38 @@ function TableProvider({ children }) {
     setIsOpen((opn) => !opn);
   }
   function handleNextPage() {
-    if(page<totalPages){
-
-      pageParams.set("page", page+1);
-      setPageParams(pageParams)
+    if (page < totalPages) {
+      pageParams.set("page", page + 1);
+      setPageParams(pageParams);
     }
   }
   function handlePreviousPage() {
-    if(page>1){
-      pageParams.set("page",page-1);
-      setPageParams(pageParams)
+    if (page > 1) {
+      pageParams.set("page", page - 1);
+      setPageParams(pageParams);
     }
   }
   function handleSetPage(p) {
-    if(page>=1 && page<= totalPages)
-    {const params= new URLSearchParams(pageParams.toString())
-      params.set("page",p);
-      setPageParams(params)
+    if (page >= 1 && page <= totalPages) {
+      const params = new URLSearchParams(pageParams.toString());
+      params.set("page", p);
+      setPageParams(params);
     }
   }
   function handleInputChange(e) {
-    const value= e.target.value;
-    setSearchParams(prev=> {const params= new URLSearchParams(prev); if(value){params.set("fullname", value)} else {params.delete("fullname")}
-  return params});
-    
+    const value = e.target.value;
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      if (value) {
+        params.set("fullname", value);
+      } else {
+        params.delete("fullname");
+      }
+      return params;
+    });
   }
   function handleSearch(e) {
-    const value= e.target.value;
+    const value = e.target.value;
   }
 
   function handlUserType(e) {
@@ -71,12 +76,20 @@ function TableProvider({ children }) {
   function handleUserSystem(e) {
     setUserSystemFilter(Number(e.target.value));
   }
+  const currentUser = users.filter((user) => {
+    const fullName = `${user.firstName} ${user.lastName}`;
+    const matchesSearch = fullName.includes(searchTerm);
+    const matchUserType = userTypeFilter === "" || user.type === userTypeFilter;
+    const matchUserSystem =
+      userSystemFilter === "" ||
+      user.systems.includes(Number(userSystemFilter));
+    return matchUserSystem && matchesSearch && matchUserType;
+  });
 
   return (
     <TableContext.Provider
       value={{
         page,
-        
         totalPages,
         currentUsers,
         handleNextPage,
@@ -91,7 +104,8 @@ function TableProvider({ children }) {
         userSystemFilter,
         users,
         isOpen,
-        handleOpen,      
+        handleOpen,
+        currentUser,
       }}
     >
       {children}

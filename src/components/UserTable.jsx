@@ -7,11 +7,16 @@ import { useTable } from "../contexts/TableContext";
 import { useDispatch } from "react-redux";
 import { deleteUser } from "../features/users/userSlice";
 import { Link } from "react-router-dom";
-const USERS_PER_PAGE = 5;
+import NoUser from "./NoUser";
 
 export default function PaginatedTable() {
-  const { currentUsers, searchTerm, userTypeFilter, userSystemFilter } =
-    useTable();
+  const {
+    currentUsers,
+    searchTerm,
+    userTypeFilter,
+    userSystemFilter,
+    currentUser,
+  } = useTable();
   const dispatch = useDispatch();
   const handleDelete = (id) => {
     dispatch(deleteUser(id));
@@ -34,56 +39,62 @@ export default function PaginatedTable() {
               <th className="p-3 text-center">عملیات</th>
             </tr>
           </thead>
-          <tbody>
-            {currentUsers
-              .filter((user) => {
-                const fullName = `${user.firstName} ${user.lastName}`;
-                const matchesSearch = fullName.includes(searchTerm);
-                const matchUserType =
-                  userTypeFilter === "" || user.type === userTypeFilter;
-                const matchUserSystem =
-                  userSystemFilter === "" ||
-                  user.systems.includes(Number(userSystemFilter));
+          {currentUser.length === 0 ? (
+            <td colSpan={9} rowSpan={5} className="text-center py-4">
+              <NoUser />
+            </td>
+          ) : (
+            <tbody>
+              {currentUsers
+                .filter((user) => {
+                  const fullName = `${user.firstName} ${user.lastName}`;
+                  const matchesSearch = fullName.includes(searchTerm);
+                  const matchUserType =
+                    userTypeFilter === "" || user.type === userTypeFilter;
+                  const matchUserSystem =
+                    userSystemFilter === "" ||
+                    user.systems.includes(Number(userSystemFilter));
 
-                return matchesSearch && matchUserType && matchUserSystem;
-              })
-              .map((user) => (
-                <tr
-                  key={user.id}
-                  className="even:bg-gray-100 hover:bg-gray-50 transition"
-                >
-                  <td className="p-3">{user.id}</td>
-                  <td className="p-3 ">
-                    {user.firstName} {user.lastName}
-                  </td>
-                  <td className="p-3 justify-center">{user.nationalCode}</td>
-                  <td className="p-3 justify-center">{user.mobile}</td>
-                  <td className="p-3 justify-center">
-                    {user.status === 1 ? <Active /> : <Deactive />}
-                  </td>
-                  <td className="p-3 justify-center">
-                    {user.twoFactorEnabled ? <Active /> : <Deactive />}
-                  </td>
-                  <td className="p-3 justify-center">
-                    {user.type === 1 ? (
-                      <TypeOfUser>سازمانی</TypeOfUser>
-                    ) : (
-                      <TypeOfUser>شهروند</TypeOfUser>
-                    )}
-                  </td>
-                  <td className="p-3 justify-center">{user.systems}</td>
+                  return matchesSearch && matchUserType && matchUserSystem;
+                })
+                .map((user) => (
+                  <tr
+                    key={user.id}
+                    className="even:bg-gray-100 hover:bg-gray-50 transition"
+                  >
+                    <td className="p-3">{user.id}</td>
+                    <td className="p-3 ">
+                      {user.firstName} {user.lastName}
+                    </td>
+                    <td className="p-3 justify-center">{user.nationalCode}</td>
+                    <td className="p-3 justify-center">{user.mobile}</td>
+                    <td className="p-3 justify-center">
+                      {user.status === 1 ? <Active /> : <Deactive />}
+                    </td>
+                    <td className="p-3 justify-center">
+                      {user.twoFactorEnabled ? <Active /> : <Deactive />}
+                    </td>
+                    <td className="p-3 justify-center">
+                      {user.type === 1 ? (
+                        <TypeOfUser>سازمانی</TypeOfUser>
+                      ) : (
+                        <TypeOfUser>شهروند</TypeOfUser>
+                      )}
+                    </td>
+                    <td className="p-3 justify-center">{user.systems}</td>
 
-                  <td className="p-3 flex justify-center gap-2 text-gray-700">
-                    <button onClick={() => handleDelete(user.id)}>
-                      <Trash2 className="text-red-600 cursor-pointer" />
-                    </button>
-                    <Link to={`/editeuser/${user.id}`}>
-                      <Edit2 className="cursor-pointer" />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
+                    <td className="p-3 flex justify-center gap-2 text-gray-700">
+                      <button onClick={() => handleDelete(user.id)}>
+                        <Trash2 className="text-red-600 cursor-pointer" />
+                      </button>
+                      <Link to={`/editeuser/${user.id}`}>
+                        <Edit2 className="cursor-pointer" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          )}
         </table>
       </div>
       <Pagination />
